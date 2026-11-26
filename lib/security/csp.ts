@@ -26,6 +26,7 @@ export function isPublicPath(pathname: string): boolean {
     pathname === "/login" ||
     pathname === "/forgot-password" ||
     pathname === "/offline" ||
+    pathname === "/privacy" ||
     pathname.startsWith("/invite/") ||
     pathname.startsWith("/api/auth/") ||
     pathname.startsWith("/api/webhooks/") ||
