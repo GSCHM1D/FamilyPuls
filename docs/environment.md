@@ -8,7 +8,7 @@ Lokal: `.env.local` (durch `.gitignore` ausgeschlossen). Produktion: Vercel → 
 |---|---|---|---|
 | `NEXT_PUBLIC_APP_URL` | ja | eigene URL, z. B. `https://familypulse.vercel.app` | ohne `/` am Ende |
 | `NEXT_PUBLIC_SUPABASE_URL` | ja | Supabase → Project Settings → API | |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ja | Supabase → API Keys → Publishable key (`sb_publishable_…`) | Daten werden durch RLS geschützt |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | ja | Supabase → API Keys → Publishable key (`sb_publishable_…`) | Daten werden durch RLS geschützt. Alternativ `NEXT_PUBLIC_SUPABASE_ANON_KEY` (wird von der Vercel-Supabase-Integration gesetzt) |
 | `NEXT_PUBLIC_DEMO_MODE` | ja | `true`/`false` | `true` = nur synthetische Daten |
 | `SUPABASE_SERVICE_ROLE_KEY` | **nein** | Supabase → API Keys → Secret key (`sb_secret_…`) | umgeht RLS – nur Server |
 | `WHOOP_CLIENT_ID` / `WHOOP_CLIENT_SECRET` | **nein** | WHOOP Developer Dashboard | Secret prüft auch Webhooks |
