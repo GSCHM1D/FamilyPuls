@@ -11,6 +11,8 @@ import { logSafe } from "@/lib/security/redact";
 import { DEFAULT_TIMEZONE } from "@/lib/normalization/time";
 import type { ProviderId } from "@/types/health";
 import { grantedScopes, missingScopes, GOOGLE_HEALTH_SCOPES } from "./google-health/provider";
+import { ProviderHttpError } from "@/lib/http/fetch-with-retry";
+import { OAuthError } from "./oauth";
 import { getProvider } from "./registry";
 import { TokenManager } from "./token-manager";
 import type { ProviderContext } from "./types";
@@ -62,8 +64,11 @@ export async function handleCallback(request: Request, providerId: ProviderId) {
   if (!provider) return NextResponse.redirect(settingsUrl({ error: "provider_not_configured" }));
 
   const db = supabaseAdmin();
+  // Which step failed is reported back (no secrets) to make setup problems diagnosable.
+  let stage = "token";
   try {
     const tokens = await provider.exchangeCode({ code, codeVerifier: check.verifier });
+    stage = "profile";
     const scopes = providerId === "google_health" ? grantedScopes(tokens.scope) : grantedScopes(tokens.scope ?? provider.scopes.join(" "));
     const missing = providerId === "google_health" ? missingScopes(tokens.scope) : [];
     if (providerId === "google_health" && missing.length === GOOGLE_HEALTH_SCOPES.length) {
@@ -81,6 +86,7 @@ export async function handleCallback(request: Request, providerId: ProviderId) {
       return NextResponse.redirect(settingsUrl({ error: providerId === "google_health" ? "google_health_not_linked" : "profile_failed" }));
     }
 
+    stage = "db";
     // A tracker account may only be linked to one FamilyPulse user.
     const { data: other } = await db.from("provider_connections").select("user_id").eq("provider", providerId).eq("external_user_id", profile.externalUserId).neq("user_id", auth.user.id).maybeSingle();
     if (other) {
@@ -98,8 +104,10 @@ export async function handleCallback(request: Request, providerId: ProviderId) {
       .single();
     if (error || !conn) throw new Error(`connection upsert failed: ${error?.code}`);
 
+    stage = "credentials";
     await new SupabaseCredentialStore(db).save(conn.id, { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken, expiresAt: tokens.expiresAt, scope: tokens.scope });
 
+    stage = "queue";
     const { data: profileRow } = await db.from("profiles").select("timezone").eq("id", auth.user.id).maybeSingle();
     await enqueueInitialImport(conn.id, auth.user.id, profileRow?.timezone ?? DEFAULT_TIMEZONE);
     // Run the import after the response so onboarding is not blocked.
@@ -107,8 +115,9 @@ export async function handleCallback(request: Request, providerId: ProviderId) {
 
     return NextResponse.redirect(settingsUrl({ connected: providerId, ...(missing.length ? { partial: "1" } : {}) }));
   } catch (err) {
-    logSafe.error(`${providerId} oauth callback failed`, err);
-    return NextResponse.redirect(settingsUrl({ error: "connect_failed" }));
+    logSafe.error(`${providerId} oauth callback failed at ${stage}`, err);
+    const detail = err instanceof OAuthError ? `_${err.code}_${err.status}` : err instanceof ProviderHttpError ? `_http_${err.status}` : "";
+    return NextResponse.redirect(settingsUrl({ error: `connect_failed_${stage}${detail}`.replace(/[^a-z0-9_]/gi, "_").slice(0, 80) }));
   }
 }
 

@@ -48,7 +48,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <header>
         <h1 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">{t.settings.title}</h1>
         {sp.connected ? <p role="status" className="mt-2 text-sm text-green">{PROVIDER_LABEL[sp.connected as ProviderId] ?? ""} ✓{sp.partial ? ` – ${t.common.limitedComparability}` : ""}</p> : null}
-        {sp.error ? <p role="alert" className="mt-2 text-sm text-red">{t.common.error} ({sp.error.replace(/[^a-z_]/g, "")})</p> : null}
+        {sp.error ? <p role="alert" className="mt-2 text-sm text-red">{t.common.error} ({sp.error.replace(/[^a-z0-9_]/gi, "").slice(0, 80)})</p> : null}
       </header>
 
       <Section id="profile" title={t.settings.profile}>
