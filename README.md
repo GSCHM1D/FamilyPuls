@@ -5,8 +5,8 @@ und **Fitbit** (Google Health API v4) auf einer gemeinsamen Plattform zusammen. 
 welche Daten die Familie sehen darf – erzwungen in der Datenbank per Row Level Security.
 
 > **Status:** Der Code ist vollständig und getestet (Unit-, Datenbank-, Route- und End-to-End-Tests, Build).
-> Die Provider-Integrationen sind gegen die **offiziellen API-Spezifikationen** gebaut, aber **noch nicht mit echten
-> Konten getestet** – dafür werden eure Zugangsdaten benötigt (siehe „Nächste Schritte“).
+> Die Provider-Integrationen sind gegen die **offiziellen API-Spezifikationen** gebaut. **WHOOP ist mit einem echten
+> Konto verifiziert** (26.11.2026); der Test der Google Health API mit dem Fitbit-Konto steht noch aus.
 
 ## Funktionen
 - Persönliches Dashboard: Recovery/Readiness, Strain, Schlaf, Ruhepuls, HRV, Schritte, Kalorien, Puls, aktive Minuten,
@@ -92,7 +92,8 @@ tests/          unit/ (inkl. db/), e2e/
    tatsächlich verfügbaren Messwerte dokumentiert und ggf. Anpassungen vorgenommen.
 
 ## Bekannte Einschränkungen
-- Echte API-Antworten wurden noch nicht verifiziert (siehe oben). Insbesondere der `.date`-Filter für tägliche Google-Datentypen ist nur dokumentiert, nicht getestet.
+- Google-Health-Antworten wurden noch nicht mit echten Daten verifiziert. Insbesondere der `.date`-Filter für tägliche Google-Datentypen ist nur dokumentiert, nicht getestet.
+- Neue Supabase-Projekte vergeben keine Tabellenrechte mehr automatisch an `service_role` → Migration `20261127000001_service_role_grants.sql` ausführen.
 - Google Health liefert keinen Readiness- oder Sleep-Score und keine Schlafeffizienz; WHOOP liefert keine aktiven Minuten und keine Schlafphasen-Segmente.
 - WHOOP sendet keine Webhooks für Cycles (Strain/Schritte/Kalorien des laufenden Tages) → Aktualisierung über Schlaf-/Workout-Events, manuellen Sync oder Fallback-Cron.
 - Google-Projekt im Status „Testing“: Refresh-Tokens verfallen nach 7 Tagen. Ob „In production“ ohne Verifizierung möglich ist, muss mit eurem Projekt bestätigt werden.

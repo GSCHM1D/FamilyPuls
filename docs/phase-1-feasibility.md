@@ -13,7 +13,11 @@ API-Spezifikationen der Anbieter, direkt abgerufen (nicht aus dem Gedächtnis).
 | Google Health Filters / Data Types / Rate Limits / App Verification | https://developers.google.com/health/ |
 | Google Health API Developer & User Data Policy | https://developers.google.com/health/policies/health-api-developer-user-data-policy |
 
-> **Wichtig – noch nicht erledigt:** Echte API-Aufrufe mit den Konten der Familie wurden
+> **Update 26.11.2026:** WHOOP wurde mit einem echten Konto erfolgreich verbunden (OAuth, verschlüsselte
+> Token-Speicherung, Initialimport 30 Tage = 553 Datensätze, alle Dashboard-Kennzahlen und Trends befüllt).
+> Offen: Bestätigung eingehender WHOOP-Webhooks im Dauerbetrieb und der Google-Health-Test.
+>
+> **Ursprünglicher Hinweis:** Echte API-Aufrufe mit den Konten der Familie wurden
 > **noch nicht** durchgeführt, da dafür eure eigenen Zugangsdaten nötig sind. Die
 > Integrationen sind gegen die offiziellen Schemas implementiert und mit fiktiven,
 > schemakonformen Antworten getestet. Sie gelten erst als funktionierend, wenn die
