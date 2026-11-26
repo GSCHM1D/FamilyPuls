@@ -116,7 +116,8 @@ export async function handleCallback(request: Request, providerId: ProviderId) {
     return NextResponse.redirect(settingsUrl({ connected: providerId, ...(missing.length ? { partial: "1" } : {}) }));
   } catch (err) {
     logSafe.error(`${providerId} oauth callback failed at ${stage}`, err);
-    const detail = err instanceof OAuthError ? `_${err.code}_${err.status}` : err instanceof ProviderHttpError ? `_http_${err.status}` : "";
+    const dbCode = err instanceof Error ? /failed: ([A-Z0-9]{3,8})/.exec(err.message)?.[1] : undefined;
+    const detail = err instanceof OAuthError ? `_${err.code}_${err.status}` : err instanceof ProviderHttpError ? `_http_${err.status}` : dbCode ? `_${dbCode}` : "";
     return NextResponse.redirect(settingsUrl({ error: `connect_failed_${stage}${detail}`.replace(/[^a-z0-9_]/gi, "_").slice(0, 80) }));
   }
 }
