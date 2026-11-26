@@ -51,9 +51,9 @@ export function TrendChart({
         tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
         axisLine={false}
         tickLine={false}
-        width={48}
+        width={56}
         domain={["auto", "auto"]}
-        tickFormatter={(v: number) => (valueFormat === "duration" ? `${Math.round(v / 60)}h` : new Intl.NumberFormat(locale, { notation: "compact" }).format(v))}
+        tickFormatter={(v: number) => (valueFormat === "duration" ? `${Math.round(v / 60)}h` : new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(v).replace(/'/g, "’"))}
       />
       <Tooltip
         contentStyle={{ background: "var(--card-elevated)", border: "1px solid var(--border)", borderRadius: 12, fontSize: 12 }}

@@ -5,7 +5,9 @@ const intlLocale = (locale: Locale) => (locale === "de" ? "de-CH" : "en-CH");
 
 export function formatNumber(value: number | null | undefined, locale: Locale, decimals = 0): string {
   if (value === null || value === undefined || Number.isNaN(value)) return "–";
-  return new Intl.NumberFormat(intlLocale(locale), { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value);
+  const text = new Intl.NumberFormat(intlLocale(locale), { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value);
+  // Swiss thousands separator: typographic apostrophe (10’420) regardless of the ICU version.
+  return text.replace(/'/g, "’");
 }
 
 /** 492 → "8 h 12" (Swiss style used in the spec). */

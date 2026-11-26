@@ -6,13 +6,17 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import type { MetricSummary } from "@/lib/data/types";
 import type { Dictionary, Locale } from "@/lib/i18n/dictionaries";
-import { metricCategory } from "@/lib/metrics/catalog";
+import { METRICS, metricCategory } from "@/lib/metrics/catalog";
 import { formatMetric } from "@/lib/metrics/format";
-import type { MemberSummary, MetricKey, SharingCategory } from "@/types/health";
+import type { MemberSummary, MetricKey, ProviderId, SharingCategory } from "@/types/health";
 
 export const FAMILY_METRICS: MetricKey[] = ["recovery_score", "sleep_duration", "resting_heart_rate", "hrv", "steps"];
 
-export function FamilyMetricValue({ metric, summary, visible, t, locale }: { metric: MetricKey; summary: MetricSummary | undefined; visible: boolean; t: Dictionary; locale: Locale }) {
+export function FamilyMetricValue({ metric, summary, visible, t, locale, provider }: { metric: MetricKey; summary: MetricSummary | undefined; visible: boolean; t: Dictionary; locale: Locale; provider?: ProviderId | null }) {
+  // Metric not offered by this member's tracker: "not available", not "not shared".
+  if (provider && !METRICS[metric].providers.includes(provider)) {
+    return <span className="text-muted-foreground" title={t.common.notAvailable}>–</span>;
+  }
   if (!visible) {
     return (
       <span className="inline-flex items-center gap-1 text-xs text-muted-foreground" title={t.common.notShared}>
@@ -69,7 +73,7 @@ export function MemberCard({
               <div key={m} className="flex flex-col gap-0.5">
                 <dt className="text-[11px] text-muted-foreground">{t.metrics[m]}</dt>
                 <dd className="text-[15px]">
-                  <FamilyMetricValue metric={m} summary={summaries.get(m)} visible={member.isSelf || visible.includes(metricCategory(m))} t={t} locale={locale} />
+                  <FamilyMetricValue metric={m} summary={summaries.get(m)} visible={member.isSelf || visible.includes(metricCategory(m))} t={t} locale={locale} provider={member.provider} />
                 </dd>
               </div>
             ))}

@@ -1,0 +1,21 @@
+-- Optional: frequent fallback sync via Supabase Cron (pg_cron + pg_net), free tier.
+-- Vercel Hobby cron jobs run at most once per day; this runs every 30 minutes.
+-- 1) Dashboard → Database → Extensions: enable pg_cron and pg_net
+-- 2) Store the secret in Vault (never in this file):
+--      select vault.create_secret('<CRON_SECRET>', 'familypulse_cron_secret');
+-- 3) Replace the URL and run:
+select cron.schedule(
+  'familypulse-sync',
+  '*/30 * * * *',
+  $$
+  select net.http_post(
+    url := 'https://YOUR-APP.vercel.app/api/sync/cron',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'familypulse_cron_secret')
+    ),
+    body := '{}'::jsonb,
+    timeout_milliseconds := 60000
+  );
+  $$
+);

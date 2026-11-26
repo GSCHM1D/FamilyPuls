@@ -32,7 +32,7 @@ export function MetricCard({ summary, t, locale, timeZone, today }: { summary: M
     <Card className="flex flex-col gap-2" data-testid={`metric-${summary.metric}`}>
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-[13px] font-medium text-muted-foreground">{t.metrics[summary.metric]}</h3>
-        {vendor ? <Badge variant="violet" title={t.common.vendorScore}>{vendor}</Badge> : null}
+        {vendor && summary.provider ? <Badge variant="violet" className="shrink-0 whitespace-nowrap" title={`${vendor} – ${t.common.vendorScore}`}>{PROVIDER_LABEL[summary.provider].split(" ")[0]}</Badge> : null}
       </div>
       <div className="flex items-baseline gap-1">
         <span className={cn("font-[family-name:var(--font-display)] text-[28px] font-semibold leading-none tracking-tight tabular", summary.value === null && "text-muted-foreground")}>

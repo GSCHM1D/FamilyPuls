@@ -61,7 +61,7 @@ export default async function FamilyPage() {
                   <td className="px-4 py-3 text-muted-foreground">{t.metrics[k]}</td>
                   {members.map((m) => (
                     <td key={m.userId} className="px-4 py-3">
-                      <FamilyMetricValue metric={k} summary={summariesBy.get(m.userId)!.get(k)} visible={m.isSelf || (visibleBy.get(m.userId) ?? []).includes(metricCategory(k))} t={t} locale={locale} />
+                      <FamilyMetricValue metric={k} summary={summariesBy.get(m.userId)!.get(k)} visible={m.isSelf || (visibleBy.get(m.userId) ?? []).includes(metricCategory(k))} t={t} locale={locale} provider={m.provider} />
                     </td>
                   ))}
                 </tr>

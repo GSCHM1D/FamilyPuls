@@ -10,6 +10,7 @@ import { requirePageContext } from "@/lib/auth/session";
 import { summarizeMetric } from "@/lib/data/summary";
 import { formatDate, formatDurationMinutes } from "@/lib/i18n/format";
 import { DASHBOARD_METRICS, METRICS } from "@/lib/metrics/catalog";
+import { formatMetric } from "@/lib/metrics/format";
 import { addDays, todayInZone } from "@/lib/normalization/time";
 import type { MetricKey } from "@/types/health";
 
@@ -72,7 +73,7 @@ export default async function DashboardPage() {
                   <div key={m}>
                     <dt className="text-[11px] text-muted-foreground">{t.metrics[m]}</dt>
                     <dd className="text-xl font-semibold tabular">
-                      {s.value === null ? "–" : m === "steps" ? new Intl.NumberFormat("de-CH").format(s.value) : Math.round(s.value * 10) / 10}
+                      {formatMetric(m, s.value, locale).text}
                       <span className="ml-0.5 text-xs font-normal text-muted-foreground">{METRICS[m].unit}</span>
                     </dd>
                   </div>
